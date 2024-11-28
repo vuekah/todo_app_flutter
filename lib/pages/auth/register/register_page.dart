@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:todo_app_flutter/common/widgets/button.widgets.dart';
-import 'package:todo_app_flutter/common/widgets/textfield.widget.dart';
-import 'package:todo_app_flutter/utils/dimens.dart';
+import 'package:todo_app_flutter/common/widgets/button_widget.dart';
+import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/pages/auth/register/register_viewmodel.dart';
+import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/fonts.gen.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
-import 'package:todo_app_flutter/pages/auth/auth.viewmodel.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -46,7 +46,8 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildRegisterForm() {
-    return Consumer<AuthViewModel>(builder: (context, authViewModel, child) {
+    return Consumer<RegisterViewModel>(
+        builder: (context, registerViewModel, child) {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -58,11 +59,11 @@ class _RegisterPageState extends State<RegisterPage> {
           children: [
             _buildUsernameField(),
             const SizedBox(height: 20),
-            _buildPasswordField(authViewModel),
+            _buildPasswordField(registerViewModel),
             const SizedBox(height: 20),
-            _buildConfirmPasswordField(authViewModel),
+            _buildConfirmPasswordField(registerViewModel),
             const SizedBox(height: 20),
-            _buildRegisterButton(authViewModel),
+            _buildRegisterButton(registerViewModel),
             const SizedBox(height: 15),
             _buildSignInLink(),
           ],
@@ -78,15 +79,15 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildPasswordField(AuthViewModel authViewModel) {
+  Widget _buildPasswordField(RegisterViewModel registerViewModel) {
     return TextFieldWidget(
       hint: "Password",
       controller: _passwordController,
-      obscureText: authViewModel.obscurePassword,
+      obscureText: registerViewModel.obscurePassword,
       suffixIcon: GestureDetector(
-        onTap: authViewModel.changeStateObscurePassword,
+        onTap: registerViewModel.changeStateObscurePassword,
         child: Icon(
-          authViewModel.obscurePassword
+          registerViewModel.obscurePassword
               ? Icons.visibility
               : Icons.visibility_off,
         ),
@@ -94,15 +95,15 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildConfirmPasswordField(AuthViewModel authViewModel) {
+  Widget _buildConfirmPasswordField(RegisterViewModel registerViewModel) {
     return TextFieldWidget(
       hint: "Confirm Password",
       controller: _rePasswordController,
-      obscureText: authViewModel.obscureRePassword,
+      obscureText: registerViewModel.obscureRePassword,
       suffixIcon: GestureDetector(
-        onTap: authViewModel.changeStateObscureRePassword,
+        onTap: registerViewModel.changeStateObscureRePassword,
         child: Icon(
-          authViewModel.obscureRePassword
+          registerViewModel.obscureRePassword
               ? Icons.visibility
               : Icons.visibility_off,
         ),
@@ -110,12 +111,12 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildRegisterButton(AuthViewModel authViewModel) {
-    return authViewModel.registerStatus == AuthStatus.loading
+  Widget _buildRegisterButton(RegisterViewModel registerViewModel) {
+    return registerViewModel.registerStatus == RegisterStatus.loading
         ? const CircularProgressIndicator(color: MyAppColors.backgroundColor)
         : ButtonWidget(
             callback: () async {
-              await _handleRegister(authViewModel);
+              await _handleRegister(registerViewModel);
             },
             title: "Sign up",
           );
@@ -144,8 +145,8 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Future<void> _handleRegister(AuthViewModel authViewModel) async {
-    await authViewModel.register(
+  Future<void> _handleRegister(RegisterViewModel registerViewModel) async {
+    await registerViewModel.register(
       _usernameController.text,
       _passwordController.text,
       _rePasswordController.text,
@@ -153,8 +154,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (!mounted) return;
 
-    if (authViewModel.registerStatus == AuthStatus.error) {
-      _showSnackbar(context, authViewModel.errorRegister);
+    if (registerViewModel.registerStatus == RegisterStatus.error) {
+      _showSnackbar(context, registerViewModel.errorRegister);
     } else {
       _showSnackbar(context, 'Registration successful');
       Navigator.pop(context);

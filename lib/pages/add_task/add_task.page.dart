@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:todo_app_flutter/common/widgets/button.widgets.dart';
-import 'package:todo_app_flutter/common/widgets/textfield.widget.dart';
-import 'package:todo_app_flutter/utils/dimens.dart';
+import 'package:todo_app_flutter/common/widgets/button_widget.dart';
+import 'package:todo_app_flutter/common/widgets/category_widget.dart';
+import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/pages/add_task/add_task_viewmodel.dart';
+import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
+import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/assets.gen.dart';
 import 'package:todo_app_flutter/gen/fonts.gen.dart';
-import 'package:todo_app_flutter/model/task.model.dart';
+import 'package:todo_app_flutter/model/task_model.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
-import 'package:todo_app_flutter/utils/date.util.dart';
-import 'package:todo_app_flutter/pages/home/home.viewmodel.dart';
+import 'package:todo_app_flutter/utils/date_util.dart';
 
 class AddTaskPage extends StatefulWidget {
   const AddTaskPage({super.key});
@@ -36,33 +38,62 @@ class _AddTaskPageState extends State<AddTaskPage> {
       backgroundColor: MyAppColors.greyColor,
       body: Stack(
         children: [
-          _buildBackground(context),
+          _buildBackground(),
           _buildSaveButton(context),
         ],
       ),
     );
   }
 
-  Consumer<ViewModel> _buildSaveButton(BuildContext context) {
-    return Consumer<ViewModel>(
-      builder: (_, hm, __) => Positioned(
-        bottom: Dimens.padding.bottom,
-        left:
-            Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
-        right:
-            Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
-        child: hm.addTaskStatus == Status.loading
-            ? const Center(child: CircularProgressIndicator())
-            : ButtonWidget(
-                callback: () async {
-                  _saveTask(hm);
-                },
-                title: "Save"),
-      ),
+  Widget _buildSaveButton(BuildContext context) {
+    return Positioned(
+      bottom: Dimens.padding.bottom,
+      left: Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
+      right:
+          Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
+      child: context.select(
+                  (AddTaskViewModel viewModel) => viewModel.addTaskStatus) ==
+              Status.loading
+          ? const Center(child: CircularProgressIndicator())
+          : ButtonWidget(
+              callback: () async {
+                final addTaskViewModel = context.read<AddTaskViewModel>();
+                try {
+                  final task = TaskModel(
+                    category: addTaskViewModel.selectedButton,
+                    taskTitle: _taskTitleController.text,
+                    date: addTaskViewModel.date.toReverseFormattedDateString()!,
+                    time: addTaskViewModel.time.convertTo24HourFormat(),
+                    notes: _notesController.text,
+                    uid: Supabase.instance.client.auth.currentUser?.id ?? "",
+                    isCompleted: false,
+                  );
+                  final id = await addTaskViewModel.addTask(task);
+
+                  _notesController.clear();
+                  _taskTitleController.clear();
+
+                  final snackBarMessage =
+                      addTaskViewModel.addTaskStatus == Status.error
+                          ? addTaskViewModel.errorAddTask
+                          : 'Task added successfully!';
+
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(snackBarMessage)));
+                      //them vao home
+                  context.read<HomeViewModel>().addNewTask(task.copyWith(id: id));
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to add task: $e')));
+                }
+              },
+              title: "Save",
+            ),
     );
   }
 
-  SizedBox _buildBackground(BuildContext context) {
+  SizedBox _buildBackground() {
     return SizedBox(
       width: Dimens.screenWidth,
       height: Dimens.screenHeight,
@@ -73,26 +104,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ],
       ),
     );
-  }
-
-  Future<void> _saveTask(ViewModel hm) async {
-    await hm.addTask(TaskModel(
-        id: (hm.currentId + 1),
-        category: hm.selectedButton,
-        taskTitle: _taskTitleController.text,
-        date: hm.date.toReverseFormattedDateString()!,
-        time: hm.time.convertTo24HourFormat(),
-        notes: _notesController.text,
-        uid: Supabase.instance.client.auth.currentUser?.id ?? "",
-        isCompleted: false));
-    _notesController.clear();
-    _taskTitleController.clear();
-    final snackBarMessage = hm.addTaskStatus == Status.error
-        ? hm.errorAddTask
-        : 'Task added successfully!';
-    if(!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(snackBarMessage)));
   }
 
   Flexible _buildForm(BuildContext context) {
@@ -120,57 +131,43 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 controller: _taskTitleController,
               ),
               const SizedBox(height: 10),
-              Consumer<ViewModel>(builder: (context, value, child) {
-                return Row(
-                  children: [
-                    const Text(
-                      "Category",
-                      style: TextStyle(
-                        color: MyAppColors.black,
-                        fontSize: 14,
-                        fontFamily: FontFamily.inter,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        value.setSelected(1);
-                      },
-                      child: Opacity(
-                          opacity: value.selectedButton == 1 ? 1 : .2,
-                          child: Image.asset(Assets.images.book.path)),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        value.setSelected(2);
-                      },
-                      child: Opacity(
-                          opacity: value.selectedButton == 2 ? 1 : .2,
-                          child: Image.asset(Assets.images.schedule.path)),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        value.setSelected(3);
-                      },
-                      child: Opacity(
-                          opacity: value.selectedButton == 3 ? 1 : .2,
-                          child: Image.asset(Assets.images.cup.path)),
-                    ),
-                  ],
-                );
-              }),
-              const SizedBox(height: 10),
               Row(
                 children: [
-                  Flexible(
-                    child: Consumer<ViewModel>(
-                      builder: (_, hm, __) => TextFieldWidget(
+                  const Text(
+                    "Category",
+                    style: TextStyle(
+                      color: MyAppColors.black,
+                      fontSize: 14,
+                      fontFamily: FontFamily.inter,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  CategoryWidget(
+                    index: 1,
+                    assets: Assets.images.book.path,
+                  ),
+                  const SizedBox(width: 12),
+                  CategoryWidget(
+                    index: 2,
+                    assets: Assets.images.schedule.path,
+                  ),
+                  const SizedBox(width: 12),
+                  CategoryWidget(
+                    index: 3,
+                    assets: Assets.images.cup.path,
+                  )
+                ],
+              ),
+              const SizedBox(height: 10),
+              Consumer<AddTaskViewModel>(
+                builder: (context, value, child) => Row(
+                  children: [
+                    Flexible(
+                      child: TextFieldWidget(
                         hint: "Date",
                         isReadOnly: true,
-                        placeholder: hm.date.toFormattedDateString(),
+                        placeholder: value.date.toFormattedDateString(),
                         suffixIcon: GestureDetector(
                           onTap: () async {
                             final date = await showDatePicker(
@@ -180,7 +177,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                                   DatePickerEntryMode.calendarOnly,
                               lastDate: DateTime(2999),
                             );
-                            hm.setDateSelected(date);
+                            if (!context.mounted) return;
+                            value.setDateSelected(date);
                           },
                           child: const Icon(
                             Icons.date_range,
@@ -189,19 +187,18 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 20),
-                  Flexible(
-                    child: Consumer<ViewModel>(
-                      builder: (_, hm, __) => TextFieldWidget(
+                    const SizedBox(width: 20),
+                    Flexible(
+                      child: TextFieldWidget(
                         isReadOnly: true,
                         hint: "Time",
-                        placeholder: hm.time,
+                        placeholder: value.time,
                         suffixIcon: GestureDetector(
                           onTap: () async {
                             final time = await showTimePicker(
                                 context: context, initialTime: TimeOfDay.now());
-                            hm.setTimeSelected(time);
+                            if (!context.mounted) return;
+                            value.setTimeSelected(time);
                           },
                           child: const Icon(
                             Icons.schedule,
@@ -210,8 +207,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               TextFieldWidget(
@@ -260,25 +257,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   horizontal: 24,
                   vertical: Dimens.screenHeight > Dimens.screenWidth ? 0 : 10),
               child: AppBar(
-                leading: Consumer<ViewModel>(
-                  builder: (context, value, child) {
-                    return GestureDetector(
-                      onTap: () {
-                        // value.fetchCompletedTodos();
-                        // value.fetchTodos();
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: MyAppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Icon(Icons.close),
-                      ),
-                    );
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
                   },
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: MyAppColors.whiteColor,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: const Icon(Icons.close),
+                  ),
                 ),
                 backgroundColor: MyAppColors.transparentColor,
                 title: const Text("Add new task"),

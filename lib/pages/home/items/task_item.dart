@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app_flutter/gen/assets.gen.dart';
-import 'package:todo_app_flutter/model/task.model.dart';
+import 'package:todo_app_flutter/model/task_model.dart';
 import 'package:todo_app_flutter/theme/text_style.dart';
-import 'package:todo_app_flutter/utils/date.util.dart';
+import 'package:todo_app_flutter/utils/date_util.dart';
 
 class TaskItem extends StatelessWidget {
   final TaskModel task;
@@ -27,7 +27,7 @@ class TaskItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    task.taskTitle,
+                    task.taskTitle + "---- ${task.id}",
                     style: task.isCompleted
                         ? MyAppStyles.completedTitleTextStyle
                         : MyAppStyles.completedTextStyle,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:todo_app_flutter/pages/home/home.page.dart';
-import 'package:todo_app_flutter/pages/auth/login.page.dart';
+import 'package:todo_app_flutter/pages/home/home_page.dart';
+import 'package:todo_app_flutter/pages/auth/login/login_page.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
 import 'package:todo_app_flutter/theme/text_style.dart';
 

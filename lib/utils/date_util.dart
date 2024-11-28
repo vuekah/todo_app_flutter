@@ -84,6 +84,7 @@ extension ConvertDateExtensions on String {
       return time;
     }
   }
+
   String convertTo24HourFormat() {
     return "${split(" ")[0]}:00";
   }
