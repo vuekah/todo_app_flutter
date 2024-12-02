@@ -27,7 +27,7 @@ class TaskItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    task.taskTitle + "---- ${task.id}",
+                    task.taskTitle,
                     style: task.isCompleted
                         ? MyAppStyles.completedTitleTextStyle
                         : MyAppStyles.completedTextStyle,

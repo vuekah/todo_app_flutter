@@ -30,37 +30,40 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     Dimens.init(context);
-    return Scaffold(
-      backgroundColor: MyAppColors.backgroundColor,
-      body: Center(
-        child: Container(
-          margin:
-              EdgeInsets.all(Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: MyAppColors.whiteColor,
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFieldWidget(
-                hint: "Username",
-                controller: _usernameController,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              _buildPasswordField(context),
-              const SizedBox(
-                height: 20,
-              ),
-              _buildLoginButton(context),
-              const SizedBox(
-                height: 15,
-              ),
-              _buildSignUpLink()
-            ],
+    return ChangeNotifierProvider(
+      create: (context) => LoginViewModel(),
+      builder: (context, child) => Scaffold(
+        backgroundColor: MyAppColors.backgroundColor,
+        body: Center(
+          child: Container(
+            margin: EdgeInsets.all(
+                Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              color: MyAppColors.whiteColor,
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFieldWidget(
+                  hint: "Username",
+                  controller: _usernameController,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                _buildPasswordField(context),
+                const SizedBox(
+                  height: 20,
+                ),
+                _buildLoginButton(context),
+                const SizedBox(
+                  height: 15,
+                ),
+                _buildSignUpLink()
+              ],
+            ),
           ),
         ),
       ),

@@ -31,45 +31,45 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     Dimens.init(context);
 
-    return Scaffold(
-      backgroundColor: MyAppColors.backgroundColor,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(
-                Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
-            child: _buildRegisterForm(),
+    return ChangeNotifierProvider(
+      create: (context) => RegisterViewModel(),
+      builder:(context,child)=> Scaffold(
+        backgroundColor: MyAppColors.backgroundColor,
+        body: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(
+                  Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
+              child: _buildRegisterForm(context),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRegisterForm() {
-    return Consumer<RegisterViewModel>(
-        builder: (context, registerViewModel, child) {
-      return Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          color: MyAppColors.whiteColor,
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildUsernameField(),
-            const SizedBox(height: 20),
-            _buildPasswordField(registerViewModel),
-            const SizedBox(height: 20),
-            _buildConfirmPasswordField(registerViewModel),
-            const SizedBox(height: 20),
-            _buildRegisterButton(registerViewModel),
-            const SizedBox(height: 15),
-            _buildSignInLink(),
-          ],
-        ),
-      );
-    });
+  Widget _buildRegisterForm(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        color: MyAppColors.whiteColor,
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildUsernameField(),
+          const SizedBox(height: 20),
+          _buildPasswordField(context),
+          const SizedBox(height: 20),
+          _buildConfirmPasswordField(context),
+          const SizedBox(height: 20),
+          _buildRegisterButton(context),
+          const SizedBox(height: 15),
+          _buildSignInLink(),
+        ],
+      ),
+    );
   }
 
   Widget _buildUsernameField() {
@@ -79,15 +79,15 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildPasswordField(RegisterViewModel registerViewModel) {
+  Widget _buildPasswordField(BuildContext context) {
     return TextFieldWidget(
       hint: "Password",
       controller: _passwordController,
-      obscureText: registerViewModel.obscurePassword,
+      obscureText: context.watch<RegisterViewModel>().obscurePassword,
       suffixIcon: GestureDetector(
-        onTap: registerViewModel.changeStateObscurePassword,
+        onTap: context.read<RegisterViewModel>().changeStateObscurePassword,
         child: Icon(
-          registerViewModel.obscurePassword
+          context.watch<RegisterViewModel>().obscurePassword
               ? Icons.visibility
               : Icons.visibility_off,
         ),
@@ -95,15 +95,15 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildConfirmPasswordField(RegisterViewModel registerViewModel) {
+  Widget _buildConfirmPasswordField(BuildContext context) {
     return TextFieldWidget(
       hint: "Confirm Password",
       controller: _rePasswordController,
-      obscureText: registerViewModel.obscureRePassword,
+      obscureText: context.watch<RegisterViewModel>().obscureRePassword,
       suffixIcon: GestureDetector(
-        onTap: registerViewModel.changeStateObscureRePassword,
+        onTap: context.read<RegisterViewModel>().changeStateObscureRePassword,
         child: Icon(
-          registerViewModel.obscureRePassword
+          context.watch<RegisterViewModel>().obscureRePassword
               ? Icons.visibility
               : Icons.visibility_off,
         ),
@@ -111,12 +111,13 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget _buildRegisterButton(RegisterViewModel registerViewModel) {
-    return registerViewModel.registerStatus == RegisterStatus.loading
+  Widget _buildRegisterButton(BuildContext context) {
+    return context.read<RegisterViewModel>().registerStatus ==
+            RegisterStatus.loading
         ? const CircularProgressIndicator(color: MyAppColors.backgroundColor)
         : ButtonWidget(
             callback: () async {
-              await _handleRegister(registerViewModel);
+              await _handleRegister(context);
             },
             title: "Sign up",
           );
@@ -145,17 +146,18 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Future<void> _handleRegister(RegisterViewModel registerViewModel) async {
-    await registerViewModel.register(
-      _usernameController.text,
-      _passwordController.text,
-      _rePasswordController.text,
-    );
+  Future<void> _handleRegister(BuildContext context) async {
+    await context.read<RegisterViewModel>().register(
+          _usernameController.text,
+          _passwordController.text,
+          _rePasswordController.text,
+        );
 
-    if (!mounted) return;
+    if (!context.mounted) return;
 
-    if (registerViewModel.registerStatus == RegisterStatus.error) {
-      _showSnackbar(context, registerViewModel.errorRegister);
+    if (context.watch<RegisterViewModel>().registerStatus ==
+        RegisterStatus.error) {
+      _showSnackbar(context, context.read<RegisterViewModel>().errorRegister);
     } else {
       _showSnackbar(context, 'Registration successful');
       Navigator.pop(context);

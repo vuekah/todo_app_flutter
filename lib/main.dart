@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:todo_app_flutter/pages/add_task/add_task_viewmodel.dart';
-import 'package:todo_app_flutter/pages/auth/register/register_viewmodel.dart';
+import 'package:todo_app_flutter/pages/auth/login/login_viewmodel.dart';
 import 'package:todo_app_flutter/pages/splash_page.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
 import 'package:todo_app_flutter/theme/text_style.dart';
-import 'package:todo_app_flutter/pages/auth/login/login_viewmodel.dart';
-import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
 
 const String anonKey =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxd2J0ZWppeHpuaG1veGl0Z2NrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzA3MDgwOTMsImV4cCI6MjA0NjI4NDA5M30.uhOegJf5C6ojGpk3pi34hkFMLASW_TpK8hNDld7QpJo";
@@ -25,21 +22,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      // Theme.of(context)
-      providers: [
-        ChangeNotifierProvider(create: (_) => HomeViewModel()),
-        ChangeNotifierProvider(create: (_) => LoginViewModel()),
-        ChangeNotifierProvider(create: (_) => RegisterViewModel()),
-        ChangeNotifierProvider(create: (_) => AddTaskViewModel()),
-      ],
-      child: MaterialApp(
-        theme: ThemeData(
-            appBarTheme: const AppBarTheme(
-                backgroundColor: MyAppColors.backgroundColor,
-                titleTextStyle: MyAppStyles.titleAppbarTextStyle)),
-        home: const SplashPage(),
-      ),
+    return MaterialApp(
+      theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+              backgroundColor: MyAppColors.backgroundColor,
+              titleTextStyle: MyAppStyles.titleAppbarTextStyle)),
+      home: const SplashPage(),
     );
   }
 }

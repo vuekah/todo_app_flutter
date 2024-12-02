@@ -26,14 +26,13 @@ class TaskService {
     }
   }
 
-  Future<int> addTask(TaskModel task) async {
+  Future<TaskModel> addTask(TaskModel task) async {
     try {
-      // Insert task into Supabase and retrieve the inserted row
       final res = await _client.from(_tableName).insert(task.toJson()).select();
 
       final insertedTask = TaskModel.fromJson(res[0]);
       debugPrint('insert task ID: ${insertedTask.id}');
-      return insertedTask.id ?? 0;
+      return insertedTask;
     } catch (e) {
       throw Exception('Failed to addTask: ${e.toString()}');
     }

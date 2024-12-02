@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo_app_flutter/model/task_model.dart';
 import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
 import 'package:todo_app_flutter/service/task_service.dart';
+import 'package:todo_app_flutter/utils/date_util.dart';
 
 class AddTaskViewModel extends ChangeNotifier {
   DateTime _date = DateTime.now();
@@ -38,18 +40,28 @@ class AddTaskViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<int?> addTask(TaskModel task) async {
+  Future<TaskModel?> addTask(String title, String notes) async {
     try {
-      if (task.taskTitle.isEmpty || task.notes.isEmpty) {
+      if (title.isEmpty || notes.isEmpty) {
         _addTaskStatus = Status.error;
         _errorAddTask = "Task and Notes is empty";
       } else {
         _addTaskStatus = Status.loading;
         notifyListeners();
-        final id = await TaskService().addTask(task);
+
+        final task = TaskModel(
+          category: selectedButton,
+          taskTitle: title,
+          date: date.toReverseFormattedDateString()!,
+          time: time.convertTo24HourFormat(),
+          notes: notes,
+          uid: Supabase.instance.client.auth.currentUser?.id ?? "",
+          isCompleted: false,
+        );
+        final taskModel = await TaskService().addTask(task);
         _addTaskStatus = Status.completed;
         _errorAddTask = "Add Successfiully!";
-        return id;
+        return taskModel;
       }
     } catch (e) {
       _addTaskStatus = Status.error;
