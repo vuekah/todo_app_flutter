@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app_flutter/common/widgets/button_widget.dart';
 import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/l10n/language_provider.dart';
 import 'package:todo_app_flutter/pages/auth/login/login_viewmodel.dart';
 import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/fonts.gen.dart';
 import 'package:todo_app_flutter/pages/home/home_page.dart';
 import 'package:todo_app_flutter/pages/auth/register/register_page.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -33,21 +35,38 @@ class _LoginPageState extends State<LoginPage> {
     return ChangeNotifierProvider(
       create: (context) => LoginViewModel(),
       builder: (context, child) => Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () {
+              final languageProvider =
+                  Provider.of<LanguageProvider>(context, listen: false);
+              final currentLocale = languageProvider.locale.languageCode;
+              final newLanguageCode = currentLocale == 'vi' ? 'en' : 'vi';
+              languageProvider.changeLanguage(newLanguageCode);
+            },
+            icon: const Icon(
+              Icons.language,
+              size: 30,
+              color: MyAppColors.whiteColor,
+            ),
+          ),
+        ),
         backgroundColor: MyAppColors.backgroundColor,
         body: Center(
           child: Container(
-            margin: EdgeInsets.all(
-                Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
               color: MyAppColors.whiteColor,
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextFieldWidget(
-                  hint: "Username",
+                  hint: AppLocalizations.of(context)!.username,
                   controller: _usernameController,
                 ),
                 const SizedBox(
@@ -59,9 +78,9 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 _buildLoginButton(context),
                 const SizedBox(
-                  height: 15,
+                  height: 30,
                 ),
-                _buildSignUpLink()
+                _buildSignUpLink(),
               ],
             ),
           ),
@@ -74,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account?"),
+        Text(AppLocalizations.of(context)!.dontHaveAccount),
         const SizedBox(width: 2),
         GestureDetector(
           onTap: () {
@@ -83,9 +102,9 @@ class _LoginPageState extends State<LoginPage> {
               MaterialPageRoute(builder: (_) => const RegisterPage()),
             );
           },
-          child: const Text(
-            "Sign up",
-            style: TextStyle(
+          child: Text(
+            AppLocalizations.of(context)!.signUpTitle,
+            style: const TextStyle(
               color: MyAppColors.backgroundColor,
               fontFamily: FontFamily.inter,
               fontWeight: FontWeight.w600,
@@ -106,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
             callback: () async {
               await _handleLogin(context);
             },
-            title: "Sign in",
+            title: AppLocalizations.of(context)!.signInTitle,
           );
   }
 
@@ -123,14 +142,27 @@ class _LoginPageState extends State<LoginPage> {
       );
     } else {
       if (!mounted) return;
-      _showSnackbar(context, context.read<LoginViewModel>().errorLogin);
+      switch (context.read<LoginViewModel>().errorLogin) {
+        case LoginError.error:
+          _showSnackbar(context, AppLocalizations.of(context)!.loginError);
+          break;
+        case LoginError.emptyField:
+          _showSnackbar(context, AppLocalizations.of(context)!.emptyFieldError);
+          break;
+        case LoginError.invalidCredential:
+          _showSnackbar(
+              context, AppLocalizations.of(context)!.loginInvalidCredentials);
+          break;
+        default:
+          break;
+      }
     }
   }
 
   TextFieldWidget _buildPasswordField(BuildContext context) {
     return TextFieldWidget(
       controller: _passwordController,
-      hint: "Password",
+      hint: AppLocalizations.of(context)!.password,
       suffixIcon: GestureDetector(
         child: Icon(context.watch<LoginViewModel>().obscurePassword
             ? Icons.visibility

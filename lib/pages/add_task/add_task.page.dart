@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app_flutter/common/widgets/button_widget.dart';
 import 'package:todo_app_flutter/common/widgets/category_widget.dart';
 import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/l10n/language_provider.dart';
 import 'package:todo_app_flutter/pages/add_task/add_task_viewmodel.dart';
 import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
+import 'package:todo_app_flutter/theme/text_style.dart';
 import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/assets.gen.dart';
-import 'package:todo_app_flutter/gen/fonts.gen.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
 import 'package:todo_app_flutter/utils/date_util.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddTaskPage extends StatefulWidget {
   const AddTaskPage({super.key});
@@ -21,6 +24,12 @@ class AddTaskPage extends StatefulWidget {
 class _AddTaskPageState extends State<AddTaskPage> {
   final _taskTitleController = TextEditingController();
   final _notesController = TextEditingController();
+  late DateTime _dateTime;
+  @override
+  void initState() {
+    _dateTime = DateTime.now();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -59,28 +68,30 @@ class _AddTaskPageState extends State<AddTaskPage> {
           : ButtonWidget(
               callback: () async {
                 final addTaskViewModel = context.read<AddTaskViewModel>();
-                try {
+                final date = DateFormat("MMMM dd, yyyy", 'en')
+                    .format(_dateTime)
+                    .toFormattedDateString();
+                if (date != null) {
                   final taskModel = await addTaskViewModel.addTask(
-                      _taskTitleController.text, _notesController.text);
+                      _taskTitleController.text, _notesController.text, date);
 
                   _notesController.clear();
                   _taskTitleController.clear();
 
+                  if (!context.mounted) return;
                   final snackBarMessage =
                       addTaskViewModel.addTaskStatus == Status.error
-                          ? addTaskViewModel.errorAddTask
-                          : 'Task added successfully!';
-                  
-                  if (!context.mounted) return;
+                          ? AppLocalizations.of(context)!.emptyFieldError
+                          : AppLocalizations.of(context)!.addSuccess;
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text(snackBarMessage)));
-                  Navigator.of(context).pop(taskModel);
-                } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed to add task: $e')));
+                  if (taskModel != null) {
+                    /////////// context of HomeViewModle
+                    context.read<HomeViewModel>().addNewTask(taskModel);
+                  }
                 }
               },
-              title: "Save",
+              title: AppLocalizations.of(context)!.save,
             ),
     );
   }
@@ -119,20 +130,15 @@ class _AddTaskPageState extends State<AddTaskPage> {
             children: [
               const SizedBox(height: 10),
               TextFieldWidget(
-                hint: "Task Title",
+                hint: AppLocalizations.of(context)!.taskTitle,
                 controller: _taskTitleController,
               ),
               const SizedBox(height: 10),
               Row(
                 children: [
-                  const Text(
-                    "Category",
-                    style: TextStyle(
-                      color: MyAppColors.black,
-                      fontSize: 14,
-                      fontFamily: FontFamily.inter,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  Text(
+                    AppLocalizations.of(context)!.category,
+                    style: MyAppStyles.hintTextStyle,
                   ),
                   const SizedBox(width: 8),
                   CategoryWidget(
@@ -168,12 +174,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 children: [
                   Flexible(
                     child: TextFieldWidget(
-                      hint: "Date",
+                      hint: AppLocalizations.of(context)!.date,
                       isReadOnly: true,
-                      placeholder: context
-                          .watch<AddTaskViewModel>()
-                          .date
-                          .toFormattedDateString(),
+                      placeholder: context.read<LanguageProvider>().locale ==
+                              const Locale('en')
+                          ? DateFormat("MMMM dd, yyyy", 'en')
+                              .format(_dateTime)
+                              .toFormattedDateString()
+                          : DateFormat("dd-MM-yyyy", 'vi').format(_dateTime),
                       suffixIcon: GestureDetector(
                         onTap: () async {
                           final date = await showDatePicker(
@@ -183,9 +191,11 @@ class _AddTaskPageState extends State<AddTaskPage> {
                             lastDate: DateTime(2999),
                           );
                           if (!context.mounted) return;
-                          context
-                              .read<AddTaskViewModel>()
-                              .setDateSelected(date);
+                          if (date != null) {
+                            setState(() {
+                              _dateTime = date;
+                            });
+                          }
                         },
                         child: const Icon(
                           Icons.date_range,
@@ -198,7 +208,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   Flexible(
                     child: TextFieldWidget(
                       isReadOnly: true,
-                      hint: "Time",
+                      hint: AppLocalizations.of(context)!.time,
                       placeholder: context.watch<AddTaskViewModel>().time,
                       suffixIcon: GestureDetector(
                         onTap: () async {
@@ -220,7 +230,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
               ),
               const SizedBox(height: 10),
               TextFieldWidget(
-                hint: "Notes",
+                hint: AppLocalizations.of(context)!.notes,
                 controller: _notesController,
                 height: 177,
                 maxLines: 10,
@@ -280,7 +290,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   ),
                 ),
                 backgroundColor: MyAppColors.transparentColor,
-                title: const Text("Add new task"),
+                title: Text(AppLocalizations.of(context)!.addNewTask),
               ),
             ),
           ],

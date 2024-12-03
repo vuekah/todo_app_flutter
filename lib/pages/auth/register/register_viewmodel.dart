@@ -3,13 +3,20 @@ import 'package:todo_app_flutter/service/auth_service.dart';
 
 enum RegisterStatus { init, loading, success, error }
 
+enum RegisterErrorMessage {
+  init,
+  errorSomething,
+  errorRePassword,
+  emptyFieldError
+}
+
 class RegisterViewModel extends ChangeNotifier {
   bool _obscurePassword = true;
   RegisterStatus _registerStatus = RegisterStatus.init;
   bool _obscureRePassword = true;
-  String _errorRegister = "";
+  RegisterErrorMessage _errorRegister = RegisterErrorMessage.init;
 
-  String get errorRegister => _errorRegister;
+  RegisterErrorMessage get errorRegister => _errorRegister;
   bool get obscurePassword => _obscurePassword;
   bool get obscureRePassword => _obscureRePassword;
   RegisterStatus get registerStatus => _registerStatus;
@@ -34,23 +41,22 @@ class RegisterViewModel extends ChangeNotifier {
           final response = await AuthService().register(username, pwd);
           if (response.user != null) {
             _registerStatus = RegisterStatus.success;
-            _errorRegister = "Register Successfully";
           } else {
             _registerStatus = RegisterStatus.error;
-            _errorRegister = "Something is error! ";
+            _errorRegister = RegisterErrorMessage.errorSomething;
           }
         } else {
           _registerStatus = RegisterStatus.error;
-          _errorRegister = "Re password not match!";
+          _errorRegister = RegisterErrorMessage.errorRePassword;
           //showing not match
         }
       } else {
         _registerStatus = RegisterStatus.error;
-        _errorRegister = "Username, Password, RePassword cannot be empty";
+        _errorRegister = RegisterErrorMessage.emptyFieldError;
       }
     } catch (e) {
       _registerStatus = RegisterStatus.error;
-      _errorRegister = e.toString();
+      _errorRegister =RegisterErrorMessage.errorSomething;
     } finally {
       notifyListeners();
     }

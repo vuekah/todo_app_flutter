@@ -3,14 +3,16 @@ import 'package:todo_app_flutter/service/auth_service.dart';
 
 enum LoginStatus { init, loading, success, error }
 
+enum LoginError { init, error, invalidCredential, emptyField }
+
 class LoginViewModel extends ChangeNotifier {
   bool _obscurePassword = true;
   LoginStatus _loginStatus = LoginStatus.init;
-  String _errorLogin = "";
+  LoginError _errorLogin = LoginError.init;
 
-  String get errorLogin => _errorLogin;
   bool get obscurePassword => _obscurePassword;
   LoginStatus get loginStatus => _loginStatus;
+  LoginError get errorLogin => _errorLogin;
 
   void changeStateObscurePassword() {
     _obscurePassword = !_obscurePassword;
@@ -29,19 +31,17 @@ class LoginViewModel extends ChangeNotifier {
           _loginStatus = LoginStatus.success;
         } else {
           _loginStatus = LoginStatus.error;
-          _errorLogin = "Login failed. Please check your credentials.";
+          _errorLogin = LoginError.error;
         }
       } else {
         _loginStatus = LoginStatus.error;
-        _errorLogin = "Username and password cannot be empty";
+        _errorLogin = LoginError.emptyField;
       }
     } catch (e) {
       _loginStatus = LoginStatus.error;
-      _errorLogin = "Invalid login credentials";
+      _errorLogin = LoginError.invalidCredential;
     } finally {
       notifyListeners();
     }
   }
-
- 
 }

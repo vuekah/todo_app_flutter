@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:todo_app_flutter/common/widgets/button_widget.dart';
+import 'package:todo_app_flutter/l10n/language_provider.dart';
 import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
 import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/assets.gen.dart';
@@ -11,6 +13,7 @@ import 'package:todo_app_flutter/pages/home/items/task_item.dart';
 import 'package:todo_app_flutter/pages/auth/login/login_page.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
 import 'package:todo_app_flutter/theme/text_style.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,101 +24,125 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  Widget build(BuildContext context1) {
-    Dimens.init(context1);
-    return ChangeNotifierProvider(
-        create: (context) => HomeViewModel(),
-        child: Builder(
-            builder: (context) => Scaffold(
-                  backgroundColor: MyAppColors.greyColor,
-                  body: SingleChildScrollView(
-                    child: Stack(
-                      children: [
-                        _buildBackground(),
+  void initState() {
+    super.initState();
+  }
 
-                        // Main content
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: Dimens.screenHeight < Dimens.screenWidth
-                                ? Dimens.padding.left
-                                : 16,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              AppBar(
-                                backgroundColor: MyAppColors.transparentColor,
-                                centerTitle: true,
-                                title: Text(
-                                  context.read<HomeViewModel>().date,
-                                  textAlign: TextAlign.center,
-                                  style: MyAppStyles.formattedDateTextStyle,
-                                ),
-                                actions: [
-                                  GestureDetector(
-                                    onTap: () async {
-                                      await context
-                                          .read<HomeViewModel>()
-                                          .logout();
-                                      if (!context.mounted) return;
-                                      Navigator.pushAndRemoveUntil(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (_) => const LoginPage()),
-                                        (route) => false,
-                                      );
-                                    },
-                                    child: const Icon(
-                                      Icons.logout,
-                                      color: MyAppColors.whiteColor,
-                                      size: 28,
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 15),
-                              // Todo list title
-                              const Text(
-                                "My Todo List",
-                                textAlign: TextAlign.center,
-                                style: MyAppStyles.todoListTitleTextStyle,
-                              ),
-                              const SizedBox(height: 15),
-                              // First Todo List Item
-                              todoListContainer(context),
-                              const SizedBox(height: 10),
-                              const Text(
-                                "Completed",
-                                textAlign: TextAlign.start,
-                                style: MyAppStyles.completedTextStyle,
-                              ),
-                              const SizedBox(height: 10),
-                              // Second Todo List Item
-                              completedListContainer(context),
-                              const SizedBox(height: 60),
-                              // Add Task button for landscape layout
-                              if (Dimens.screenHeight < Dimens.screenWidth)
-                                addNewTaskButton(context),
-                            ],
+  @override
+  Widget build(BuildContext contexts) {
+    Dimens.init(context);
+    return Scaffold(
+        backgroundColor: MyAppColors.greyColor,
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              _buildBackground(),
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: Dimens.screenHeight < Dimens.screenWidth
+                      ? Dimens.padding.left
+                      : 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    AppBar(
+                      backgroundColor: MyAppColors.transparentColor,
+                      centerTitle: true,
+                      leading: IconButton(
+                        onPressed: () {
+                          final languageProvider =
+                              Provider.of<LanguageProvider>(context,
+                                  listen: false);
+                          final currentLocale =
+                              languageProvider.locale.languageCode;
+                          final newLanguageCode =
+                              currentLocale == 'vi' ? 'en' : 'vi';
+                          languageProvider.changeLanguage(newLanguageCode);
+                        },
+                        icon: const Icon(
+                          Icons.language,
+                          size: 30,
+                          color: MyAppColors.whiteColor,
+                        ),
+                      ),
+                      title: Selector<LanguageProvider, Locale>(
+                        builder: (context, locale, child) {
+                          return Text(
+                            locale.languageCode == 'en'
+                                ? DateFormat("MMMM dd, yyyy")
+                                    .format(DateTime.now())
+                                : DateFormat("dd MMMM, yyyy", 'vi')
+                                    .format(DateTime.now()),
+                            textAlign: TextAlign.center,
+                            style: MyAppStyles.formattedDateTextStyle,
+                          );
+                        },
+                        selector: (p0, languageProvider) =>
+                            languageProvider.locale,
+                      ),
+                      actions: [
+                        GestureDetector(
+                          onTap: () async {
+                            await context.read<HomeViewModel>().logout();
+                            if (!mounted) return;
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const LoginPage()),
+                              (route) => false,
+                            );
+                          },
+                          child: const Icon(
+                            Icons.logout,
+                            color: MyAppColors.whiteColor,
+                            size: 28,
                           ),
                         ),
-                        // Add Task button for portrait layout (positioned at the bottom)
-                        if (Dimens.screenHeight > Dimens.screenWidth)
-                          Positioned(
-                            bottom: Dimens.padding.bottom,
-                            left: Dimens.screenHeight < Dimens.screenWidth
-                                ? Dimens.padding.left
-                                : 16,
-                            right: Dimens.screenHeight < Dimens.screenWidth
-                                ? Dimens.padding.left
-                                : 16,
-                            child: addNewTaskButton(context),
-                          ),
                       ],
                     ),
-                  ),
-                )));
+
+                    const SizedBox(height: 15),
+                    Text(
+                      AppLocalizations.of(context)!.myToDoList,
+                      textAlign: TextAlign.center,
+                      style: MyAppStyles.todoListTitleTextStyle,
+                    ),
+                    const SizedBox(height: 15),
+                    // First Todo List Item
+                    todoListContainer(context),
+                    const SizedBox(height: 10),
+                    Text(
+                      AppLocalizations.of(context)!.completed,
+                      textAlign: TextAlign.start,
+                      style: MyAppStyles.completedTextStyle,
+                    ),
+                    const SizedBox(height: 10),
+                    // Second Todo List Item
+                    completedListContainer(context),
+                    const SizedBox(height: 60),
+                    // Add Task button for landscape layout
+                    if (Dimens.screenHeight < Dimens.screenWidth)
+                      addNewTaskButton(context),
+                  ],
+                ),
+              ),
+              // Add Task button for portrait layout (positioned at the bottom)
+              if (Dimens.screenHeight > Dimens.screenWidth)
+                Positioned(
+                  bottom: Dimens.padding.bottom,
+                  left: Dimens.screenHeight < Dimens.screenWidth
+                      ? Dimens.padding.left
+                      : 16,
+                  right: Dimens.screenHeight < Dimens.screenWidth
+                      ? Dimens.padding.left
+                      : 16,
+                  child: addNewTaskButton(context),
+                ),
+            ],
+          ),
+        ));
   }
 
   SizedBox _buildBackground() {
@@ -169,14 +196,10 @@ class _HomePageState extends State<HomePage> {
   Widget addNewTaskButton(BuildContext context) {
     return ButtonWidget(
       callback: () async {
-        final res = await Navigator.push(
+        Navigator.push(
             context, MaterialPageRoute(builder: (_) => const AddTaskPage()));
-        if (res is TaskModel) {
-          if (!context.mounted) return;
-          context.read<HomeViewModel>().addNewTask(res);
-        }
       },
-      title: "Add New Task",
+      title: AppLocalizations.of(context)!.addNewTask,
     );
   }
 
@@ -195,7 +218,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: context.watch<HomeViewModel>().status == Status.error
             ? Center(
-                child: Text(context.read<HomeViewModel>().errorFetchTodoList),
+                child: Text(AppLocalizations.of(context)!.errorLoading),
               )
             : context.watch<HomeViewModel>().status == Status.loading
                 ? Skeletonizer(
@@ -246,7 +269,7 @@ class _HomePageState extends State<HomePage> {
       ),
       child: homeViewModel.status == Status.error
           ? Center(
-              child: Text(homeViewModel.errorFetchCompletedList),
+              child: Text(AppLocalizations.of(context)!.errorLoading),
             )
           : homeViewModel.status == Status.loading
               ? Skeletonizer(
