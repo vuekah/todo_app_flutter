@@ -76,6 +76,7 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   void resetAllState() {
+    _listTodo = [];
     _listCompleted = [];
     _status = Status.init;
     _completedStatus = Status.init;
@@ -83,7 +84,6 @@ class HomeViewModel extends ChangeNotifier {
 
   Future logout() async {
     try {
-      resetAllState();
       return await AuthService().logout();
     } catch (e) {
       debugPrint(e.toString());

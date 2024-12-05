@@ -85,14 +85,13 @@ class _HomePageState extends State<HomePage> {
                       actions: [
                         GestureDetector(
                           onTap: () async {
-                            await context.read<HomeViewModel>().logout();
-                            if (!mounted) return;
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                   builder: (_) => const LoginPage()),
                               (route) => false,
                             );
+                            context.read<HomeViewModel>().logout();
                           },
                           child: const Icon(
                             Icons.logout,

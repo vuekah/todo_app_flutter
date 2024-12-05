@@ -4,6 +4,7 @@ import 'package:todo_app_flutter/common/widgets/button_widget.dart';
 import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
 import 'package:todo_app_flutter/l10n/language_provider.dart';
 import 'package:todo_app_flutter/pages/auth/login/login_viewmodel.dart';
+import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
 import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/fonts.gen.dart';
 import 'package:todo_app_flutter/pages/home/home_page.dart';
@@ -140,6 +141,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(builder: (_) => const HomePage()),
       );
+      context.read<HomeViewModel>().resetAllState();
     } else {
       if (!mounted) return;
       switch (context.read<LoginViewModel>().errorLogin) {
