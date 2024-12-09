@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:todo_app_flutter/common/widgets/button.widgets.dart';
-import 'package:todo_app_flutter/common/widgets/textfield.widget.dart';
-import 'package:todo_app_flutter/utils/dimens.dart';
+import 'package:todo_app_flutter/common/widgets/button_widget.dart';
+import 'package:todo_app_flutter/common/widgets/category_widget.dart';
+import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/l10n/language_provider.dart';
+import 'package:todo_app_flutter/pages/add_task/add_task_viewmodel.dart';
+import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
+import 'package:todo_app_flutter/theme/text_style.dart';
+import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/assets.gen.dart';
-import 'package:todo_app_flutter/gen/fonts.gen.dart';
-import 'package:todo_app_flutter/model/task.model.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
-import 'package:todo_app_flutter/utils/date.util.dart';
-import 'package:todo_app_flutter/pages/home/home.viewmodel.dart';
+import 'package:todo_app_flutter/utils/date_util.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AddTaskPage extends StatefulWidget {
   const AddTaskPage({super.key});
@@ -21,6 +24,12 @@ class AddTaskPage extends StatefulWidget {
 class _AddTaskPageState extends State<AddTaskPage> {
   final _taskTitleController = TextEditingController();
   final _notesController = TextEditingController();
+  late DateTime _dateTime;
+  @override
+  void initState() {
+    _dateTime = DateTime.now();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -30,35 +39,60 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    Dimens.init(context);
-    return Scaffold(
-      backgroundColor: MyAppColors.greyColor,
-      body: Stack(
-        children: [
-          _buildBackground(context),
-          _buildSaveButton(context),
-        ],
+  Widget build(BuildContext context1) {
+    Dimens.init(context1);
+    return ChangeNotifierProvider(
+      create: (context) => AddTaskViewModel(),
+      builder: (context, child) => Scaffold(
+        backgroundColor: MyAppColors.greyColor,
+        body: Stack(
+          children: [
+            _buildBackground(context),
+            _buildSaveButton(context),
+          ],
+        ),
       ),
     );
   }
 
-  Consumer<ViewModel> _buildSaveButton(BuildContext context) {
-    return Consumer<ViewModel>(
-      builder: (_, hm, __) => Positioned(
-        bottom: Dimens.padding.bottom,
-        left:
-            Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
-        right:
-            Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
-        child: hm.addTaskStatus == Status.loading
-            ? const Center(child: CircularProgressIndicator())
-            : ButtonWidget(
-                callback: () async {
-                  _saveTask(hm);
-                },
-                title: "Save"),
-      ),
+  Widget _buildSaveButton(BuildContext context) {
+    return Positioned(
+      bottom: Dimens.padding.bottom,
+      left: Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
+      right:
+          Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
+      child: context.select(
+                  (AddTaskViewModel viewModel) => viewModel.addTaskStatus) ==
+              Status.loading
+          ? const Center(child: CircularProgressIndicator())
+          : ButtonWidget(
+              callback: () async {
+                final addTaskViewModel = context.read<AddTaskViewModel>();
+                final date = DateFormat("MMMM dd, yyyy", 'en')
+                    .format(_dateTime)
+                    .toFormattedDateString();
+                if (date != null) {
+                  final taskModel = await addTaskViewModel.addTask(
+                      _taskTitleController.text, _notesController.text, date);
+
+                  _notesController.clear();
+                  _taskTitleController.clear();
+
+                  if (!context.mounted) return;
+                  final snackBarMessage =
+                      addTaskViewModel.addTaskStatus == Status.error
+                          ? AppLocalizations.of(context)!.emptyFieldError
+                          : AppLocalizations.of(context)!.addSuccess;
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(snackBarMessage)));
+                  if (taskModel != null) {
+                    /////////// context of HomeViewModle
+                    context.read<HomeViewModel>().addNewTask(taskModel);
+                  }
+                }
+              },
+              title: AppLocalizations.of(context)!.save,
+            ),
     );
   }
 
@@ -73,26 +107,6 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ],
       ),
     );
-  }
-
-  Future<void> _saveTask(ViewModel hm) async {
-    await hm.addTask(TaskModel(
-        id: (hm.currentId + 1),
-        category: hm.selectedButton,
-        taskTitle: _taskTitleController.text,
-        date: hm.date.toReverseFormattedDateString()!,
-        time: hm.time.convertTo24HourFormat(),
-        notes: _notesController.text,
-        uid: Supabase.instance.client.auth.currentUser?.id ?? "",
-        isCompleted: false));
-    _notesController.clear();
-    _taskTitleController.clear();
-    final snackBarMessage = hm.addTaskStatus == Status.error
-        ? hm.errorAddTask
-        : 'Task added successfully!';
-    if(!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(snackBarMessage)));
   }
 
   Flexible _buildForm(BuildContext context) {
@@ -116,97 +130,98 @@ class _AddTaskPageState extends State<AddTaskPage> {
             children: [
               const SizedBox(height: 10),
               TextFieldWidget(
-                hint: "Task Title",
+                hint: AppLocalizations.of(context)!.taskTitle,
                 controller: _taskTitleController,
               ),
               const SizedBox(height: 10),
-              Consumer<ViewModel>(builder: (context, value, child) {
-                return Row(
-                  children: [
-                    const Text(
-                      "Category",
-                      style: TextStyle(
-                        color: MyAppColors.black,
-                        fontSize: 14,
-                        fontFamily: FontFamily.inter,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        value.setSelected(1);
-                      },
-                      child: Opacity(
-                          opacity: value.selectedButton == 1 ? 1 : .2,
-                          child: Image.asset(Assets.images.book.path)),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        value.setSelected(2);
-                      },
-                      child: Opacity(
-                          opacity: value.selectedButton == 2 ? 1 : .2,
-                          child: Image.asset(Assets.images.schedule.path)),
-                    ),
-                    const SizedBox(width: 12),
-                    GestureDetector(
-                      onTap: () {
-                        value.setSelected(3);
-                      },
-                      child: Opacity(
-                          opacity: value.selectedButton == 3 ? 1 : .2,
-                          child: Image.asset(Assets.images.cup.path)),
-                    ),
-                  ],
-                );
-              }),
+              Row(
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.category,
+                    style: MyAppStyles.hintTextStyle,
+                  ),
+                  const SizedBox(width: 8),
+                  CategoryWidget(
+                    index: 1,
+                    callBack: () {
+                      context.read<AddTaskViewModel>().setSelected(1);
+                    },
+                    selected: context.watch<AddTaskViewModel>().selectedButton,
+                    assets: Assets.images.book.path,
+                  ),
+                  const SizedBox(width: 12),
+                  CategoryWidget(
+                    index: 2,
+                    callBack: () {
+                      context.read<AddTaskViewModel>().setSelected(2);
+                    },
+                    selected: context.watch<AddTaskViewModel>().selectedButton,
+                    assets: Assets.images.schedule.path,
+                  ),
+                  const SizedBox(width: 12),
+                  CategoryWidget(
+                    index: 3,
+                    callBack: () {
+                      context.read<AddTaskViewModel>().setSelected(3);
+                    },
+                    selected: context.watch<AddTaskViewModel>().selectedButton,
+                    assets: Assets.images.cup.path,
+                  )
+                ],
+              ),
               const SizedBox(height: 10),
               Row(
                 children: [
                   Flexible(
-                    child: Consumer<ViewModel>(
-                      builder: (_, hm, __) => TextFieldWidget(
-                        hint: "Date",
-                        isReadOnly: true,
-                        placeholder: hm.date.toFormattedDateString(),
-                        suffixIcon: GestureDetector(
-                          onTap: () async {
-                            final date = await showDatePicker(
-                              context: context,
-                              firstDate: DateTime.now(),
-                              initialEntryMode:
-                                  DatePickerEntryMode.calendarOnly,
-                              lastDate: DateTime(2999),
-                            );
-                            hm.setDateSelected(date);
-                          },
-                          child: const Icon(
-                            Icons.date_range,
-                            color: MyAppColors.backgroundColor,
-                          ),
+                    child: TextFieldWidget(
+                      hint: AppLocalizations.of(context)!.date,
+                      isReadOnly: true,
+                      placeholder: context.read<LanguageProvider>().locale ==
+                              const Locale('en')
+                          ? DateFormat("MMMM dd, yyyy", 'en')
+                              .format(_dateTime)
+                              .toFormattedDateString()
+                          : DateFormat("dd-MM-yyyy", 'vi').format(_dateTime),
+                      suffixIcon: GestureDetector(
+                        onTap: () async {
+                          final date = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now(),
+                            initialEntryMode: DatePickerEntryMode.calendarOnly,
+                            lastDate: DateTime(2999),
+                          );
+                          if (!context.mounted) return;
+                          if (date != null) {
+                            setState(() {
+                              _dateTime = date;
+                            });
+                          }
+                        },
+                        child: const Icon(
+                          Icons.date_range,
+                          color: MyAppColors.backgroundColor,
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 20),
                   Flexible(
-                    child: Consumer<ViewModel>(
-                      builder: (_, hm, __) => TextFieldWidget(
-                        isReadOnly: true,
-                        hint: "Time",
-                        placeholder: hm.time,
-                        suffixIcon: GestureDetector(
-                          onTap: () async {
-                            final time = await showTimePicker(
-                                context: context, initialTime: TimeOfDay.now());
-                            hm.setTimeSelected(time);
-                          },
-                          child: const Icon(
-                            Icons.schedule,
-                            color: MyAppColors.backgroundColor,
-                          ),
+                    child: TextFieldWidget(
+                      isReadOnly: true,
+                      hint: AppLocalizations.of(context)!.time,
+                      placeholder: context.watch<AddTaskViewModel>().time,
+                      suffixIcon: GestureDetector(
+                        onTap: () async {
+                          final time = await showTimePicker(
+                              context: context, initialTime: TimeOfDay.now());
+                          if (!context.mounted) return;
+                          context
+                              .read<AddTaskViewModel>()
+                              .setTimeSelected(time);
+                        },
+                        child: const Icon(
+                          Icons.schedule,
+                          color: MyAppColors.backgroundColor,
                         ),
                       ),
                     ),
@@ -215,7 +230,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
               ),
               const SizedBox(height: 10),
               TextFieldWidget(
-                hint: "Notes",
+                hint: AppLocalizations.of(context)!.notes,
                 controller: _notesController,
                 height: 177,
                 maxLines: 10,
@@ -260,28 +275,22 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   horizontal: 24,
                   vertical: Dimens.screenHeight > Dimens.screenWidth ? 0 : 10),
               child: AppBar(
-                leading: Consumer<ViewModel>(
-                  builder: (context, value, child) {
-                    return GestureDetector(
-                      onTap: () {
-                        // value.fetchCompletedTodos();
-                        // value.fetchTodos();
-                        Navigator.pop(context);
-                      },
-                      child: Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: MyAppColors.whiteColor,
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Icon(Icons.close),
-                      ),
-                    );
+                leading: GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
                   },
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: MyAppColors.whiteColor,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: const Icon(Icons.close),
+                  ),
                 ),
                 backgroundColor: MyAppColors.transparentColor,
-                title: const Text("Add new task"),
+                title: Text(AppLocalizations.of(context)!.addNewTask),
               ),
             ),
           ],

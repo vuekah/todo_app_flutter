@@ -35,18 +35,18 @@ extension DateStringExtensions on String {
 
   String? toReverseFormattedDateString() {
     List<String> monthNames = [
-      'January',
-      'February',
-      'March',
-      'April',
+       'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
       'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
 
     String originalText =
@@ -84,6 +84,7 @@ extension ConvertDateExtensions on String {
       return time;
     }
   }
+
   String convertTo24HourFormat() {
     return "${split(" ")[0]}:00";
   }

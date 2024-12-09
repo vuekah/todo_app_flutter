@@ -1,12 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:todo_app_flutter/model/task.model.dart';
+import 'package:todo_app_flutter/model/task_model.dart';
 
 class TaskService {
   final String _tableName = "tasks";
   final _client = Supabase.instance.client;
 
   Future<List<Map<String, dynamic>>> fetchTodos() async {
-
     return await _client
         .from(_tableName)
         .select()
@@ -15,7 +15,6 @@ class TaskService {
   }
 
   Future<List<Map<String, dynamic>>> fetchCompleted() async {
-    print("====fetchCompleted uid:${ _client.auth.currentSession!.user.id} ");
     try {
       return await _client
           .from(_tableName)
@@ -27,9 +26,13 @@ class TaskService {
     }
   }
 
-  Future<void> addTask(TaskModel task) async {
+  Future<TaskModel> addTask(TaskModel task) async {
     try {
-      await _client.from(_tableName).insert(task.toJson());
+      final res = await _client.from(_tableName).insert(task.toJson()).select();
+
+      final insertedTask = TaskModel.fromJson(res[0]);
+      debugPrint('insert task ID: ${insertedTask.id}');
+      return insertedTask;
     } catch (e) {
       throw Exception('Failed to addTask: ${e.toString()}');
     }

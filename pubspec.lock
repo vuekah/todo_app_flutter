@@ -267,14 +267,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_gen:
-    dependency: "direct main"
-    description:
-      name: flutter_gen
-      sha256: d7e4e57f606d73628b97765a67fdfb5a97e24cd2183e170afa8d1f62e48a9d5c
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.8.0"
   flutter_gen_core:
     dependency: transitive
     description:
@@ -299,6 +291,11 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.0"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -686,7 +683,7 @@ packages:
     source: hosted
     version: "0.28.0"
   shared_preferences:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: shared_preferences
       sha256: "95f9997ca1fb9799d494d0cb2a780fd7be075818d59f00c43832ed112b158a82"

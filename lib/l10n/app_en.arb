@@ -1,0 +1,38 @@
+{
+
+    "helloScreen": "Welcome to My App",
+
+    "signInTitle":"Sign in",
+    "username":"Username",
+    "password":"Password",
+    "dontHaveAccount":"Don't have an account?",
+    "loginError": "Login failed. Please check your credentials.",
+    "loginInvalidCredentials": "Invalid login credentials",
+
+    "signUpTitle":"Sign up",
+    "confirmPassword":"Confirm Password",
+    "alreadyHaveAccount":"Already have an account?",
+    "registerSuccess":"Register Successfully",
+    "errorSomething":"Something is error!",
+    "errorRePassword":"Re-password not match",
+
+    "emptyFieldError": "Field cannot be empty!",
+
+    "myToDoList":"My Todo List",
+    "completed":"Completed",
+    "addNewTask":"Add New Task",
+    "errorLoading":"Failed to load task",
+
+    "taskTitle":"Task Title",
+    "category":"Category",
+    "date":"Date",
+    "time":"Time",
+    "notes":"Notes",
+    "save":"Save",
+    "addSuccess":"Add Successfully!"
+
+
+}
+
+
+

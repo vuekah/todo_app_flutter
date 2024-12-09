@@ -1,0 +1,32 @@
+{
+    "helloScreen": "Chào mừng đến với ứng dụng của tôi",
+
+    "signInTitle": "Đăng nhập",
+    "username": "Tên đăng nhập",
+    "password": "Mật khẩu",
+    "dontHaveAccount": "Không có tài khoản?",
+    "loginError": "Đăng nhập thất bại. Kiểm tra thông tin đăng nhập.",
+    "loginInvalidCredentials": "Thông tin đăng nhập không hợp lệ",
+
+    "signUpTitle": "Đăng ký",
+    "confirmPassword": "Nhập lại mật khẩu",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "registerSuccess": "Đăng ký thành công",
+    "errorSomething": "Có lỗi xảy ra",
+    "errorRePassword": "Mật khẩu nhập lại không đúng",
+
+    "emptyFieldError": "Không bỏ trống các trường!",
+
+    "myToDoList": "Danh sách công việc",
+    "completed": "Đã hoàn thành",
+    "addNewTask": "Thêm việc mới",
+    "errorLoading": "Lỗi khi lấy dữ liệu",
+    
+    "taskTitle": "Tiêu đề công việc",
+    "category": "Danh mục",
+    "date": "Ngày",
+    "time": "Thời gian",
+    "notes": "Ghi chú",
+    "save": "Thêm",
+    "addSuccess": "Thêm thành công!"
+}

@@ -41,9 +41,31 @@ class TaskModel {
     };
   }
 
+  TaskModel copyWith({
+    int? id,
+    int? category,
+    String? taskTitle,
+    String? date,
+    String? time,
+    String? notes,
+    bool? isCompleted,
+    String? uid,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      category: category ?? this.category,
+      taskTitle: taskTitle ?? this.taskTitle,
+      date: date ?? this.date,
+      time: time ?? this.time,
+      notes: notes ?? this.notes,
+      isCompleted: isCompleted ?? this.isCompleted,
+      uid: uid ?? this.uid,
+    );
+  }
+
   @override
   String toString() {
-    return 'TaskModel{category: $category, taskTitle: $taskTitle, date: $date, time: $time, notes: $notes, isCompleted: $isCompleted, uid: $uid}';
+    return 'TaskModel{id: $id,category: $category, taskTitle: $taskTitle, date: $date, time: $time, notes: $notes, isCompleted: $isCompleted, uid: $uid}';
   }
 }
 
