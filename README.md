@@ -3,11 +3,9 @@
 A new Flutter project using provider package to management state 
 
 ## Screens
-Authentication and Home 
-<div style="display: flex; justify-content: space-between;">
-  <img src="https://res.cloudinary.com/dxiw0dtev/image/upload/f_auto,q_auto/v1ovh9za9zlcjwoihrdn" title="Authentication" alt="Authentication" width="25%"/>
-  <img src="https://res.cloudinary.com/dxiw0dtev/image/upload/f_auto,q_auto/loak0gjigrpxjkf90k1i" title="Home" alt="Home" width="25%"/>
-</div>
+<img src="https://res.cloudinary.com/dxiw0dtev/image/upload/f_auto,q_auto/v1ovh9za9zlcjwoihrdn" width="25%"/>
+
+<img src="https://res.cloudinary.com/dxiw0dtev/image/upload/f_auto,q_auto/loak0gjigrpxjkf90k1i" width="25%"/>
 
 ### Project Structure
 ```
