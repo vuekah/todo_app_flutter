@@ -3,9 +3,9 @@
 A new Flutter project using provider package to management state 
 
 ## Screens
-<img src="https://res.cloudinary.com/dxiw0dtev/image/upload/f_auto,q_auto/v1ovh9za9zlcjwoihrdn" width="25%"/>
+<img src="./screenshots/auth.gif" alt="auth screen" width="25%"/>
 
-<img src="https://res.cloudinary.com/dxiw0dtev/image/upload/f_auto,q_auto/loak0gjigrpxjkf90k1i" width="25%"/>
+<img src="./screenshots/home.gif"  alt="home screen" width="25%"/>
 
 ### Project Structure
 ```
