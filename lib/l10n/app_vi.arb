@@ -28,5 +28,9 @@
     "time": "Thời gian",
     "notes": "Ghi chú",
     "save": "Thêm",
-    "addSuccess": "Thêm thành công!"
+    "addSuccess": "Thêm thành công!",
+
+    "settingTitle":"Cài đặt",
+    "language":"Ngôn ngữ",
+    "logout":"Đăng xuất"
 }

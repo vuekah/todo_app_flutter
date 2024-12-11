@@ -27,6 +27,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/cup.png
   AssetGenImage get cup => const AssetGenImage('assets/images/cup.png');
 
+  /// File path: assets/images/logo.png
+  AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
+
   /// File path: assets/images/schedule.png
   AssetGenImage get schedule =>
       const AssetGenImage('assets/images/schedule.png');
@@ -36,7 +39,7 @@ class $AssetsImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values =>
-      [book, checked, circle, circle2, cup, schedule, uncheck];
+      [book, checked, circle, circle2, cup, logo, schedule, uncheck];
 }
 
 class Assets {

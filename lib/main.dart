@@ -20,9 +20,14 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -40,10 +45,7 @@ class MyApp extends StatelessWidget {
               GlobalWidgetsLocalizations.delegate,
               GlobalMaterialLocalizations.delegate
             ],
-            supportedLocales: const [
-              Locale('vi'),
-              Locale('en'),
-            ],
+            supportedLocales: LocaleSupport.localeSupport,
             theme: ThemeData(
                 appBarTheme: const AppBarTheme(
                     backgroundColor: MyAppColors.backgroundColor,

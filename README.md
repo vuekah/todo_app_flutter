@@ -1,11 +1,30 @@
 # todo_app_flutter
 
 A new Flutter project using provider package to management state 
+This project using flutter version 3.24.4
 
 ## Screens
 <img src="./screenshots/auth.gif" alt="auth screen" width="50%"/>
 
 <img src="./screenshots/home.gif"  alt="home screen" width="50%"/>
+
+## How to dev
+type this command in terminal
+```sh
+  - chmod +x build_apk.sh
+  - ./runner.sh
+```
+or 
+```sh
+  flutter pub get
+  flutter gen-l10n
+  flutter run
+```
+using this command when you want to add some assets (image, font,, etc.)
+```sh
+  flutter pub run build_runner build --delete-conflicting-outputs
+```
+
 
 ### Project Structure
 ```

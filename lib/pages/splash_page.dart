@@ -3,23 +3,35 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:todo_app_flutter/pages/home/home_page.dart';
 import 'package:todo_app_flutter/pages/auth/login/login_page.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
-import 'package:todo_app_flutter/theme/text_style.dart';
+import 'package:todo_app_flutter/gen/assets.gen.dart';
+import 'package:todo_app_flutter/utils/dimens_util.dart';
 
-class SplashPage extends StatelessWidget {
+class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<SplashPage> createState() => _SplashPageState();
+}
+
+class _SplashPageState extends State<SplashPage> {
+  @override
+  void initState() {
     Future.delayed(const Duration(seconds: 3), () {
-      if (!context.mounted) return;
+      if (!mounted) return;
       _navigateToNextPage(context);
     });
-    return const Scaffold(
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Dimens.init(context);
+    return Scaffold(
       backgroundColor: MyAppColors.backgroundColor,
       body: Center(
-        child: Text(
-          "App",
-          style: MyAppStyles.todoListTitleTextStyle,
+        child: Image.asset(
+          Assets.images.logo.path,
+          width: Dimens.screenWidth / 2.5,
         ),
       ),
     );

@@ -29,9 +29,12 @@
     "time":"Time",
     "notes":"Notes",
     "save":"Save",
-    "addSuccess":"Add Successfully!"
+    "addSuccess":"Add Successfully!",
 
 
+    "settingTitle":"Settings",
+    "language":"Language",
+    "logout":"Logout"
 }
 
 

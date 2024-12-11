@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app_flutter/common/widgets/button_widget.dart';
 import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/gen/assets.gen.dart';
 import 'package:todo_app_flutter/l10n/language_provider.dart';
 import 'package:todo_app_flutter/pages/auth/register/register_viewmodel.dart';
+import 'package:todo_app_flutter/theme/text_style.dart';
 import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/fonts.gen.dart';
 import 'package:todo_app_flutter/theme/color_style.dart';
@@ -41,9 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
             onPressed: () {
               final languageProvider =
                   Provider.of<LanguageProvider>(context, listen: false);
-              final currentLocale = languageProvider.locale.languageCode;
-              final newLanguageCode = currentLocale == 'vi' ? 'en' : 'vi';
-              languageProvider.changeLanguage(newLanguageCode);
+              languageProvider.changeLanguage();
             },
             icon: const Icon(
               Icons.language,
@@ -53,13 +53,11 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
         backgroundColor: MyAppColors.backgroundColor,
-        body: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.all(
-                  Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
-              child: _buildRegisterForm(context),
-            ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(
+                Dimens.screenWidth > Dimens.screenHeight ? 35 : 8),
+            child: _buildRegisterForm(context),
           ),
         ),
       ),
@@ -67,28 +65,41 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildRegisterForm(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: MyAppColors.whiteColor,
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildUsernameField(),
-          const SizedBox(height: 20),
-          _buildPasswordField(context),
-          const SizedBox(height: 20),
-          _buildConfirmPasswordField(context),
-          const SizedBox(height: 20),
-          _buildRegisterButton(context),
-          const SizedBox(
-            height: 30,
+    return Column(
+      children: [
+        Image.asset(
+          Assets.images.logo.path,
+          width: Dimens.screenWidth / 2.75,
+        ),
+        const Text(
+          "To do App",
+          style: MyAppStyles.todoListTitleTextStyle,
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: MyAppColors.whiteColor,
           ),
-          _buildSignInLink(),
-        ],
-      ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildUsernameField(),
+              const SizedBox(height: 20),
+              _buildPasswordField(context),
+              const SizedBox(height: 20),
+              _buildConfirmPasswordField(context),
+              const SizedBox(height: 20),
+              _buildRegisterButton(context),
+              const SizedBox(
+                height: 30,
+              ),
+              _buildSignInLink(),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
