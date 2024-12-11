@@ -11,7 +11,7 @@ This project using flutter version 3.24.4
 ## How to dev
 type this command in terminal
 ```sh
-  - chmod +x build_apk.sh
+  - chmod +x runner.sh
   - ./runner.sh
 ```
 or 
