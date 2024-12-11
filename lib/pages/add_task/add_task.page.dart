@@ -57,10 +57,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
 
   Widget _buildSaveButton(BuildContext context) {
     return Positioned(
-      bottom: Dimens.padding.bottom,
-      left: Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
-      right:
-          Dimens.screenHeight < Dimens.screenWidth ? Dimens.padding.left : 16,
+      bottom: 24,
+      left: 16,
+      right: 16,
       child: context.select(
                   (AddTaskViewModel viewModel) => viewModel.addTaskStatus) ==
               Status.loading
@@ -275,6 +274,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   horizontal: 24,
                   vertical: Dimens.screenHeight > Dimens.screenWidth ? 0 : 10),
               child: AppBar(
+                centerTitle: true,
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.pop(context);

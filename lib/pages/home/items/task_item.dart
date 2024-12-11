@@ -11,7 +11,10 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 2),
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(13)),
       padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 13),
       child: Row(
         children: [

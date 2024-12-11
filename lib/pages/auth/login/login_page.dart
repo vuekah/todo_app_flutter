@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app_flutter/common/widgets/button_widget.dart';
 import 'package:todo_app_flutter/common/widgets/textfield_widget.dart';
+import 'package:todo_app_flutter/gen/assets.gen.dart';
 import 'package:todo_app_flutter/l10n/language_provider.dart';
 import 'package:todo_app_flutter/pages/auth/login/login_viewmodel.dart';
 import 'package:todo_app_flutter/pages/home/home_viewmodel.dart';
+import 'package:todo_app_flutter/theme/text_style.dart';
 import 'package:todo_app_flutter/utils/dimens_util.dart';
 import 'package:todo_app_flutter/gen/fonts.gen.dart';
 import 'package:todo_app_flutter/pages/home/home_page.dart';
@@ -37,13 +39,12 @@ class _LoginPageState extends State<LoginPage> {
       create: (context) => LoginViewModel(),
       builder: (context, child) => Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.transparent,
           leading: IconButton(
             onPressed: () {
               final languageProvider =
                   Provider.of<LanguageProvider>(context, listen: false);
-              final currentLocale = languageProvider.locale.languageCode;
-              final newLanguageCode = currentLocale == 'vi' ? 'en' : 'vi';
-              languageProvider.changeLanguage(newLanguageCode);
+              languageProvider.changeLanguage();
             },
             icon: const Icon(
               Icons.language,
@@ -53,37 +54,53 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         backgroundColor: MyAppColors.backgroundColor,
-        body: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              color: MyAppColors.whiteColor,
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFieldWidget(
-                  hint: AppLocalizations.of(context)!.username,
-                  controller: _usernameController,
+        body: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Image.asset(
+                Assets.images.logo.path,
+                width: Dimens.screenWidth / 2.75,
+              ),
+              const Text(
+                "To do App",
+                style: MyAppStyles.todoListTitleTextStyle,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  color: MyAppColors.whiteColor,
                 ),
-                const SizedBox(
-                  height: 20,
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFieldWidget(
+                      hint: AppLocalizations.of(context)!.username,
+                      controller: _usernameController,
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _buildPasswordField(context),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    _buildLoginButton(context),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    _buildSignUpLink(),
+                  ],
                 ),
-                _buildPasswordField(context),
-                const SizedBox(
-                  height: 20,
-                ),
-                _buildLoginButton(context),
-                const SizedBox(
-                  height: 30,
-                ),
-                _buildSignUpLink(),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
