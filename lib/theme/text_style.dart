@@ -12,7 +12,7 @@ class MyAppStyles {
   );
   static const todoListTitleTextStyle = TextStyle(
     fontWeight: FontWeight.w700,
-    fontSize: 25,
+    fontSize: 28,
     fontFamily: FontFamily.inter,
     color: MyAppColors.whiteColor,
   );

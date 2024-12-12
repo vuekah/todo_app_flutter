@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody(BuildContext context) {
     return SafeArea(
+      bottom: false,
       child: Stack(
         children: [
           _buildBackground(context),
