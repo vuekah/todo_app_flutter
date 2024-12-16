@@ -1,62 +1,72 @@
-name: Flutter CI/CD with Fastlane
+name: Firebase Deploy
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - main 
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Set up Flutter
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: ${{ matrix.flutter-version }}
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+            java-version: '17'
+            distribution: 'temurin' 
+            cache: gradle
 
-    # Install dependencies
-    - name: Install dependencies
-      run: |
-        flutter pub get
+      # Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.27.0'
 
-    # Set Fastlane environment variables
-    - name: Set Fastlane environment variables
-      run: |
-        echo "FASTLANE_SKIP_UPDATE_CHECK=true" >> $GITHUB_ENV
-        echo "FASTLANE_DISABLE_COLORS=true" >> $GITHUB_ENV
-        echo "FASTLANE_LOG_LEVEL=error" >> $GITHUB_ENV
-        echo "FASTLANE_UI=non-interactive" >> $GITHUB_ENV
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+            flutter clean
+            flutter pub get
 
-    # Setup Ruby environment for Fastlane
-    - name: Setup Ruby and Fastlane
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.0'
+    # Setup Fastlane
+      - name: Setup Ruby and Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+            ruby-version: '3.0'
 
-    # Install Fastlane
-    - name: Install Fastlane
-      run: |
-        gem install fastlane
+      - name: Install Fastlane
+        run: |
+          gem install fastlane
+          
+      - name: Install Fastlane Firebase App Distribution plugin
+        working-directory: android
+        run: fastlane add_plugin firebase_app_distribution
 
-    # Install Firebase App Distribution plugin (if necessary)
-    - name: Install Fastlane Firebase App Distribution plugin
-      run: |
-        cd android
-        fastlane add_plugin firebase_app_distribution
+      # - name: Build APK
+      #   run: flutter build apk
+      #   env:
+      #     STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+      #     KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+      #     KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      #     STORE_FILE: ./keystore.jks
 
-    # Ensure that Fastlane can find your Fastfile
-    - name: Ensure Fastlane Fastfile
-      run: |
-        ls fastlane 
-    # Run Fastlane Beta
-    - name: Run Fastlane Beta
-      run: |
-        fastlane beta
+      # - name: Make gradlew executable
+      #   run: chmod +x android/gradlew
+        
+      # Decrypt google-services.json
+      - name: Decrypt google-services.json
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
+
+      # Deploy to Firebase App Distribution
+      - name: Deploy to Firebase App Distribution
+        run: |
+          cd android
+          fastlane beta
+      
