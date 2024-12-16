@@ -55,5 +55,4 @@ jobs:
     # Run Fastlane Beta
     - name: Run Fastlane Beta
       run: |
-        cd android
         fastlane beta

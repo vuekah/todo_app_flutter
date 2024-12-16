@@ -18,7 +18,7 @@ default_platform(:android)
 platform :android do
 
   lane :beta do
-    sh "./build_apk.sh"
+    sh "../build_apk.sh"
   
     firebase_app_distribution(
       app: "1:439662361776:android:1eedf6e3695a6b35c98f75",
