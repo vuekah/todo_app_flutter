@@ -42,10 +42,10 @@ jobs:
     # Install Firebase App Distribution plugin (if necessary)
     - name: Install Fastlane Firebase App Distribution plugin
       run: |
+        cd android
         fastlane add_plugin firebase_app_distribution
 
     # Run fastlane command
     - name: Run Fastlane Beta
       run: |
-        cd android
         fastlane beta
