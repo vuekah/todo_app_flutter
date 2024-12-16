@@ -12,7 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
@@ -28,13 +27,20 @@ jobs:
       run: |
         flutter pub get
 
-    # Setup Ruby environment for fastlane
+    # Set Fastlane environment variables
+    - name: Set Fastlane environment variables
+      run: |
+        echo "FASTLANE_SKIP_UPDATE_CHECK=true" >> $GITHUB_ENV
+        echo "FASTLANE_DISABLE_COLORS=true" >> $GITHUB_ENV
+        echo "FASTLANE_LOG_LEVEL=error" >> $GITHUB_ENV
+
+    # Setup Ruby environment for Fastlane
     - name: Setup Ruby and Fastlane
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0'
 
-    # Install fastlane
+    # Install Fastlane
     - name: Install Fastlane
       run: |
         gem install fastlane
@@ -45,7 +51,7 @@ jobs:
         cd android
         fastlane add_plugin firebase_app_distribution
 
-    # Run fastlane command
+    # Run Fastlane Beta
     - name: Run Fastlane Beta
       run: |
-        fastlane beta
+        bundle exec fastlane beta
