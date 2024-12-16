@@ -32,6 +32,7 @@ jobs:
         run: |
             flutter clean
             flutter pub get
+            flutter get-l10n
 
     # Setup Fastlane
       - name: Setup Ruby and Fastlane
@@ -57,12 +58,6 @@ jobs:
 
       # - name: Make gradlew executable
       #   run: chmod +x android/gradlew
-        
-      # Decrypt google-services.json
-      - name: Decrypt google-services.json
-        run: |
-          mkdir -p android/app
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
 
       # Deploy to Firebase App Distribution
       - name: Deploy to Firebase App Distribution
