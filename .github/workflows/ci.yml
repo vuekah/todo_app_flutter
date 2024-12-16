@@ -12,10 +12,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        flutter-version: [stable, beta, dev]  # Flutter versions to test
-
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
