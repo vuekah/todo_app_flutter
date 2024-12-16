@@ -54,4 +54,4 @@ jobs:
     # Run Fastlane Beta
     - name: Run Fastlane Beta
       run: |
-        bundle exec fastlane beta
+        fastlane beta
