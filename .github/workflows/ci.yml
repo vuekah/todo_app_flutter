@@ -32,7 +32,7 @@ jobs:
         run: |
             flutter clean
             flutter pub get
-            flutter get-l10n
+            flutter gen-l10n
 
     # Setup Fastlane
       - name: Setup Ruby and Fastlane
