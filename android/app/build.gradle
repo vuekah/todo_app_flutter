@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.todo_app_flutter"
+    namespace = "com.zukhen.todoapp"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
     compileOptions {
@@ -20,11 +20,19 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.todo_app_flutter"
+        applicationId = "com.zukhen.todoapp"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+    signingConfigs {
+        release {
+            storeFile file("<path_to_your_keystore>")
+            storePassword "<keystore_password>"
+            keyAlias "<key_alias>"
+            keyPassword "<key_password>"
+        }
     }
 
     buildTypes {

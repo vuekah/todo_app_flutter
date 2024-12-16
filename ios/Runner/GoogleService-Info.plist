@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCJQ1ALX988PZtt4OGhgkPrDdqH7kuEdpU</string>
+	<string>AIzaSyCStIeidsmoBkHD-IyqG-5J3K2C-ewGLPU</string>
 	<key>GCM_SENDER_ID</key>
-	<string>196950896499</string>
+	<string>439662361776</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.todoAppFlutter</string>
+	<string>com.zukhen.todoapp</string>
 	<key>PROJECT_ID</key>
-	<string>sksks-57c27</string>
+	<string>distribution-32515</string>
 	<key>STORAGE_BUCKET</key>
-	<string>sksks-57c27.firebasestorage.app</string>
+	<string>distribution-32515.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:196950896499:ios:127879557ae155a3005f06</string>
+	<string>1:439662361776:ios:95e54afc5b3f502bc98f75</string>
 </dict>
 </plist>

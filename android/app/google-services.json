@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "196950896499",
-    "project_id": "sksks-57c27",
-    "storage_bucket": "sksks-57c27.firebasestorage.app"
+    "project_number": "439662361776",
+    "project_id": "distribution-32515",
+    "storage_bucket": "distribution-32515.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:196950896499:android:9867f08d2e71ea00005f06",
+        "mobilesdk_app_id": "1:439662361776:android:1eedf6e3695a6b35c98f75",
         "android_client_info": {
-          "package_name": "com.example.todo_app_flutter"
+          "package_name": "com.zukhen.todoapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA2aaBTqVX-T1E5GOMMYRg4UvkBIcKUirA"
+          "current_key": "AIzaSyD1mOqir5ySsTTEB9tkbHOy5JrRwatIEQI"
         }
       ],
       "services": {

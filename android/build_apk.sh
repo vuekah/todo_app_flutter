@@ -1,7 +1,9 @@
 #!/bin/bash
+sh "flutter clean"
+sh flutter pub get
+sh flutter gen-l10n
 
-flutter build apk --release
-if [ $? -eq 0 ]; then
+if flutter build apk --release; then
  echo "APK đã được build thành công!"
 else
   echo "Build APK thất bại."
