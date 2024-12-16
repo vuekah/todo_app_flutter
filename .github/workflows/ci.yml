@@ -52,6 +52,11 @@ jobs:
         cd android
         fastlane add_plugin firebase_app_distribution
 
+    # Ensure that Fastlane can find your Fastfile
+    - name: Ensure Fastlane Fastfile
+      run: |
+        ls fastlane  # Make sure the Fastfile exists
+
     # Run Fastlane Beta
     - name: Run Fastlane Beta
       run: |
