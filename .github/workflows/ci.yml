@@ -33,6 +33,7 @@ jobs:
         echo "FASTLANE_SKIP_UPDATE_CHECK=true" >> $GITHUB_ENV
         echo "FASTLANE_DISABLE_COLORS=true" >> $GITHUB_ENV
         echo "FASTLANE_LOG_LEVEL=error" >> $GITHUB_ENV
+        echo "FASTLANE_UI=non-interactive" >> $GITHUB_ENV
 
     # Setup Ruby environment for Fastlane
     - name: Setup Ruby and Fastlane
