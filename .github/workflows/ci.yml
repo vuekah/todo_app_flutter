@@ -55,8 +55,7 @@ jobs:
     # Ensure that Fastlane can find your Fastfile
     - name: Ensure Fastlane Fastfile
       run: |
-        ls fastlane  # Make sure the Fastfile exists
-
+        ls fastlane 
     # Run Fastlane Beta
     - name: Run Fastlane Beta
       run: |
