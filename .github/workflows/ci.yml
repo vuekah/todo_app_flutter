@@ -12,36 +12,40 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # Set up Flutter
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: ${{ matrix.flutter-version }}
 
+    # Install dependencies
     - name: Install dependencies
       run: |
         flutter pub get
 
-    # Deploy to Firebase App Distribution
-    - name: Deploy to Firebase App Distribution
-      run: |
-        cd android
+    # Setup Ruby environment for fastlane
     - name: Setup Ruby and Fastlane
       uses: ruby/setup-ruby@v1
       with:
-          ruby-version: '3.0'
+        ruby-version: '3.0'
 
+    # Install fastlane
     - name: Install Fastlane
       run: |
         gem install fastlane
-          
-    - name: Install Fastlane Firebase App Distribution plugin
-      working-directory: android
-      run: fastlane add_plugin firebase_app_distribution
-    - name: Running fastlane
-      run: |
-        fastlane beta
 
+    # Install Firebase App Distribution plugin (if necessary)
+    - name: Install Fastlane Firebase App Distribution plugin
+      run: |
+        fastlane add_plugin firebase_app_distribution
+
+    # Run fastlane command
+    - name: Run Fastlane Beta
+      run: |
+        cd android
+        fastlane beta
