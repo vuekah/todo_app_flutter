@@ -29,5 +29,10 @@ jobs:
     - name: Deploy to Firebase App Distribution
       run: |
         cd android
+    - name: Install Fastlane Firebase App Distribution plugin
+      working-directory: android
+      run: fastlane add_plugin firebase_app_distribution
+    - name: Running fastlane
+      run: |
         fastlane beta
 
